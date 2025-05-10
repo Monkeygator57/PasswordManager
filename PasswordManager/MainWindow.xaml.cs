@@ -13,6 +13,8 @@ using Microsoft.Data.Sqlite;
 using System.IO;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
+using PasswordManager.Data;
+
 
 namespace PasswordManager;
 
@@ -25,64 +27,31 @@ public partial class MainWindow : Window
     private static readonly byte[] AesKey = Encoding.UTF8.GetBytes("12345678901234567890123456789012"); // 32 bytes
     private static readonly byte[] AesIV = Encoding.UTF8.GetBytes("1234567890123456"); // 16 bytes
 
+    private readonly PasswordDecryption _crypto;
+    private readonly IPasswordRepository _passwordRepository;
+    private const string DatabasePath = @"C:\Users\monke\source\repos\PasswordManager\Data\PasswordManagerDB.db";
 
-    private class PasswordEntry
-    {
-        public int ID { get; set; }
-        public string? Website { get; set; }
-        public string? Username { get; set; }
-        public string? EncryptedPassword { get; set; }
-    }
-
-
+    // Constructor for MainWindow
     public MainWindow()
     {
+        // Initialize the database if it doesn't exist, necessary for first run
         InitializeComponent();
+
+        //Initialize the encryption service
+        _crypto = new PasswordDecryption(AesKey, AesIV);
+        // Initialize the password repository
+        _passwordRepository = new PasswordRepository(DatabasePath);
 
         //Call LoadPasswords to update table with passwords and website info
         LoadPasswords();
 
     }
 
-    private string EncryptString(string plainText)
-    {
-        using System.Security.Cryptography.Aes aes = System.Security.Cryptography.Aes.Create();
-        aes.Key = AesKey;
-        aes.IV = AesIV;
-
-        ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-        using MemoryStream ms = new();
-        using CryptoStream cs = new(ms, encryptor, CryptoStreamMode.Write);
-        using (StreamWriter sw = new(cs))
-        {
-            sw.Write(plainText);
-        }
-        
-        return Convert.ToBase64String(ms.ToArray());
-    }
-
-    private string DecryptString(string encryptedText)
-    {
-        using System.Security.Cryptography.Aes aes = System.Security.Cryptography.Aes.Create();
-        aes.Key = AesKey;
-        aes.IV = AesIV;
-
-        ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
-        byte[] buffer = Convert.FromBase64String(encryptedText);
-
-        using MemoryStream ms = new(buffer);
-        using CryptoStream cs = new(ms, decryptor, CryptoStreamMode.Read);
-        using StreamReader sr = new(cs);
-        {
-            return sr.ReadToEnd();
-        }
-    }
-
     private void GenerateButton_Click(object sender, RoutedEventArgs e)
     {
-
     }
 
+    // Button for adding password to database
     private void AddButton_Click(object sender, RoutedEventArgs e)
     {
         string Website = WebsiteTextBox.Text.Trim();
@@ -95,9 +64,16 @@ public partial class MainWindow : Window
             return;
         }
 
-        string encryptedPassword = EncryptString(Password);
+        var entry = new Models.PasswordEntry
+        {
+            Website = Website,
+            Username = Username,
+            EncryptedPassword = _crypto.EncryptString(Password)
+        };
 
-        string dbPath = @"C:\Users\monke\source\repos\PasswordManager\Data\PasswordManagerDB.db";
+        /*string encryptedPassword = _crypto.EncryptString(Password);
+
+        const string dbPath = @"C:\Users\monke\source\repos\PasswordManager\Data\PasswordManagerDB.db";
 
         using (var connection = new SqliteConnection($"Data Source={dbPath}"))
         {
@@ -115,23 +91,19 @@ public partial class MainWindow : Window
             }
 
             connection.Close();
-        }
+        }*/
+
+        _passwordRepository.Add(entry);
 
         ClearInputs();
         LoadPasswords();
     }
 
 
-    private void ClearInputs()
-    {
-        WebsiteTextBox.Text = "";
-        UsernameTextBox.Text = "";
-        PasswordTextBox.Text = "";
-    }
-
+    // Method read and loads passwords from database
     private void LoadPasswords()
     {
-        var passwordEntries = new List<PasswordEntry>();
+        var passwordEntries = new List<Models.PasswordEntry>();
 
         string dbPath = @"C:\Users\monke\source\repos\PasswordManager\Data\PasswordManagerDB.db";
 
@@ -145,7 +117,7 @@ public partial class MainWindow : Window
             {
                 while (reader.Read())
                 {
-                    passwordEntries.Add(new PasswordEntry
+                    passwordEntries.Add(new Models.PasswordEntry
                     {
                         ID = reader.GetInt32(0),
                         Website = reader.GetString(1),
@@ -162,35 +134,28 @@ public partial class MainWindow : Window
 
     }
 
+    // Button to delete password from database
     private void DeleteButton_Click(object sender, RoutedEventArgs e)
     {
-        if (PasswordsListView.SelectedItem is not PasswordEntry selectedEntry)
+        if (PasswordsListView.SelectedItem is not Models.PasswordEntry selectedEntry)
         {
             MessageBox.Show("Please select an entry to delete.");
             return;
         }
 
-        string dbPath = @"C:\Users\monke\source\repos\PasswordManager\Data\PasswordManagerDB.db";
-
-        using (var connection = new SqliteConnection($"Data Source={dbPath}"))
-        {
-            connection.Open();
-
-            string deleteQuery = "DELETE FROM Passwords WHERE ID = @id;";
-
-            using (var command = new SqliteCommand(deleteQuery, connection))
-            {
-                command.Parameters.AddWithValue("@id", selectedEntry.ID);
-                command.ExecuteNonQuery();
-            }
-
-            connection.Close();
-        }
-
+        _passwordRepository.Delete(selectedEntry.ID);
         LoadPasswords();
-        }
-    
     }
+
+    // Button to clear input fields
+    private void ClearInputs()
+    {
+        WebsiteTextBox.Text = "";
+        UsernameTextBox.Text = "";
+        PasswordTextBox.Text = "";
+    }
+
+}
 
 
 
