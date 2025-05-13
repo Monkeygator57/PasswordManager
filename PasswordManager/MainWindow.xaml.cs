@@ -8,12 +8,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Data.Sqlite;
 using System.IO;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using PasswordManager.Data;
+using PasswordManager.Security;
+using PasswordManager.Models;
+using System.Collections.Generic;
 
 
 namespace PasswordManager;
@@ -23,129 +25,155 @@ namespace PasswordManager;
 /// </summary>
 public partial class MainWindow : Window
 {
-    // hardcoded for development purposes
-    private static readonly byte[] AesKey = Encoding.UTF8.GetBytes("12345678901234567890123456789012"); // 32 bytes
-    private static readonly byte[] AesIV = Encoding.UTF8.GetBytes("1234567890123456"); // 16 bytes
-
-    private readonly PasswordDecryption _crypto;
+    private readonly PasswordCrypto _crypto;
     private readonly IPasswordRepository _passwordRepository;
-    private const string DatabasePath = @"C:\Users\monke\source\repos\PasswordManager\Data\PasswordManagerDB.db";
+    private readonly string _databasePath;
 
     // Constructor for MainWindow
-    public MainWindow()
+    public MainWindow(byte[] derivedKey)
     {
         // Initialize the database if it doesn't exist, necessary for first run
         InitializeComponent();
 
-        //Initialize the encryption service
-        _crypto = new PasswordDecryption(AesKey, AesIV);
-        // Initialize the password repository
-        _passwordRepository = new PasswordRepository(DatabasePath);
+        // Set up the database path
+        string appDataPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "PasswordManager"
+        );
 
-        //Call LoadPasswords to update table with passwords and website info
+        // Ensure dir exists
+        _databasePath = Path.Combine(appDataPath, "PasswordManagerDB.db");
+
+        // Initialize the database if needed
+        InitializeDatabase();
+
+        // Set up the crypto object
+        _crypto = new PasswordCrypto(derivedKey);
+
+        // Set up the password repository
+        _passwordRepository = new PasswordRepository(_databasePath);
+
+        // Load existing passwords from the database
         LoadPasswords();
 
     }
 
+    private void InitializeDatabase()
+    {
+        // Check if the database file exists
+        if (!File.Exists(_databasePath))
+        {
+            // Create the database and the Passwords table
+            using var connection = new SqliteConnection($"Data Source={_databasePath}");
+            connection.Open();
+
+            string createTableQuery = @"
+                CREATE TABLE IF NOT EXISTS Passwords (
+                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Website TEXT NOT NULL,
+                    Username TEXT NOT NULL,
+                    EncryptedPassword TEXT NOT NULL
+                );";
+
+            using var command = new SqliteCommand(createTableQuery, connection);
+            command.ExecuteNonQuery();
+        }
+    }
+
     private void GenerateButton_Click(object sender, RoutedEventArgs e)
     {
+        // Generate a random password
     }
 
     // Button for adding password to database
     private void AddButton_Click(object sender, RoutedEventArgs e)
     {
-        string Website = WebsiteTextBox.Text.Trim();
-        string Username = UsernameTextBox.Text.Trim();
-        string Password = PasswordTextBox.Text;
+        string website = WebsiteTextBox.Text.Trim();
+        string username = UsernameTextBox.Text.Trim();
+        string password = PasswordTextBox.Text;
 
-        if (string.IsNullOrEmpty(Website) || string.IsNullOrEmpty(Password))
+        if (string.IsNullOrEmpty(website) || string.IsNullOrEmpty(password))
         {
             MessageBox.Show("Please fill in all fields.");
             return;
         }
 
-        var entry = new Models.PasswordEntry
+        try
         {
-            Website = Website,
-            Username = Username,
-            EncryptedPassword = _crypto.EncryptString(Password)
-        };
-
-        /*string encryptedPassword = _crypto.EncryptString(Password);
-
-        const string dbPath = @"C:\Users\monke\source\repos\PasswordManager\Data\PasswordManagerDB.db";
-
-        using (var connection = new SqliteConnection($"Data Source={dbPath}"))
-        {
-            connection.Open();
-
-            string insertQuery = "INSERT INTO Passwords (Website, Username, EncryptedPassword) VALUES (@website, @username, @password);";
-
-            using (var command = new SqliteCommand(insertQuery, connection))
+            var entry = new Models.PasswordEntry
             {
-                command.Parameters.AddWithValue("@website", Website);
-                command.Parameters.AddWithValue("@username", Username);
-                command.Parameters.AddWithValue("@password", encryptedPassword);
+                Website = website,
+                Username = username,
+                EncryptedPassword = _crypto.EncryptString(password)
+            };
 
-                command.ExecuteNonQuery();
-            }
+            _passwordRepository.Add(entry);
 
-            connection.Close();
-        }*/
-
-        _passwordRepository.Add(entry);
-
-        ClearInputs();
-        LoadPasswords();
+            ClearInputs();
+            LoadPasswords();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error adding password: {ex.Message}");
+        }
     }
 
 
     // Method read and loads passwords from database
     private void LoadPasswords()
     {
-        var passwordEntries = new List<Models.PasswordEntry>();
-
-        string dbPath = @"C:\Users\monke\source\repos\PasswordManager\Data\PasswordManagerDB.db";
-
-        using (var connection = new SqliteConnection($"Data Source={dbPath}"))
+        try
         {
-            connection.Open();
-
-            string selectQuery = "SELECT * FROM Passwords;";
-            using (var command = new SqliteCommand(selectQuery, connection))
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    passwordEntries.Add(new Models.PasswordEntry
-                    {
-                        ID = reader.GetInt32(0),
-                        Website = reader.GetString(1),
-                        Username = reader.GetString(2),
-                        EncryptedPassword = reader.GetString(3)
-                    });
-                }
-            }
-
-            connection.Close();
+            var passwordEntries = _passwordRepository.GetAll();
+            PasswordsListView.ItemsSource = passwordEntries;
         }
 
-        PasswordsListView.ItemsSource = passwordEntries;
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading passwords: {ex.Message}");
+        }
 
     }
 
     // Button to delete password from database
     private void DeleteButton_Click(object sender, RoutedEventArgs e)
     {
-        if (PasswordsListView.SelectedItem is not Models.PasswordEntry selectedEntry)
+        if (PasswordsListView.SelectedItem is not PasswordEntry selectedEntry)
         {
             MessageBox.Show("Please select an entry to delete.");
             return;
         }
 
-        _passwordRepository.Delete(selectedEntry.ID);
-        LoadPasswords();
+        try
+        {
+            _passwordRepository.Delete(selectedEntry.ID);
+            LoadPasswords();
+        }
+
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error deleting password: {ex.Message}");
+        }
     }
+
+    // Method to view password, decrypts it
+    private void PasswordsListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is Button button && button.DataContext is PasswordEntry entry)
+        {
+            try
+            {
+                string decryptedPassword = _crypto.DecryptPassword(entry.EncryptedPassword);
+                MessageBox.Show($"Password: {decryptedPassword}", $"Password for {entry.Website}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error decrypting password: {ex.Message}");
+            }
+        }
+    }
+
+
 
     // Button to clear input fields
     private void ClearInputs()
