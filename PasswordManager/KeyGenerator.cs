@@ -36,7 +36,7 @@ namespace PasswordManager.Security
 
                 // Create a test value to verify master password later
                 byte[] testValue = Encoding.UTF8.GetBytes("VERIFY_PASSWORD_MANAGER");
-                byte[] enccryptedTest = EncryptData(testValue, key, iv);
+                byte[] encryptedTest = EncryptData(testValue, key, iv);
 
                 // Store salt and encrypted test value in the keystore
                 using (var fs = new FileStream(_keyStorePath, FileMode.Create))
@@ -46,8 +46,8 @@ namespace PasswordManager.Security
                     bw.Write(salt);
                     bw.Write(iv.Length);
                     bw.Write(iv);
-                    bw.Write(enccryptedTest.Length);
-                    bw.Write(enccryptedTest);
+                    bw.Write(encryptedTest.Length);
+                    bw.Write(encryptedTest);
                 }
 
                 return true;

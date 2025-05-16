@@ -33,6 +33,7 @@ namespace PasswordManager
             IsFirstRun = !_keyGenerator.IsKeyStoreInitialized();
 
             // Update UI based on whether is first run
+
             if (IsFirstRun)
             {
                 Title = "Set Master Password";

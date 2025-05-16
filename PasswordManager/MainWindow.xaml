@@ -5,35 +5,74 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PasswordManager"
         mc:Ignorable="d"
-        Title="PasswordManager" Height="450" Width="800">
-    
-    <Grid>
-        <StackPanel Margin="10">
-            <TextBlock Text="Website:" Margin="0,0,0,5"/>
-            <TextBox x:Name="WebsiteTextBox" Width="300"/>
-            
-            <TextBlock Text="Username:" Margin="0,0,0,5"/>
-            <TextBox x:Name="UsernameTextBox" Width="300" Margin="0,0,0,15"/>
-            
-            <TextBlock Text="Password:" Margin="0,0,0,5"/>
-            <TextBox x:Name="PasswordTextBox" Width="300" Margin="0,0,0,15"/>
-            <Button x:Name="GenerateButton" Content="Generate Password" Width="150" Margin="0,0,0,15" Click="GenerateButton_Click"/>
+        Title="PasswordManager" Height="500" Width="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,15" HorizontalAlignment="Left">
-                <Button x:Name="AddButton" Content="Add Password" Width="120" Margin="0,0,10,0" Click="AddButton_Click"/>
-                <Button x:Name="DeleteButton" Content="Delete Password" Width="120" Click="DeleteButton_Click"/>
-            </StackPanel>
+        <GroupBox Header="Add New Password" Grid.Row="0" Grid.Column="0" Margin="5">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Saved Passwords:" Margin="0,0,0,5"/>
-            <ListView x:Name="PasswordsListView" Height="200" Width="750" SelectionMode="Single">
+                <Label Grid.Row="0" Grid.Column="0" Content="Website:" Margin="0,5"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Name="WebsiteTextBox" Margin="0,5"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Username:" Margin="0,5"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Name="UsernameTextBox" Margin="0,5"/>
+
+                <Label Grid.Row="2" Grid.Column="0" Content="Password:" Margin="0,5"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Name="PasswordTextBox" Margin="0,5"/>
+                <Button Grid.Row="2" Grid.Column="2" Content="Generate" Name="GenerateButton" Margin="5" Click="GenerateButton_Click"/>
+
+                <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0, 10, 0, 0">
+                    <Button Content="Add" Name="AddButton" Width="80" Margin="5, 0" Click="AddButton_Click"/>
+                </StackPanel>
+            </Grid>
+    </GroupBox>
+
+
+    <GroupBox Header="Saved Passwords" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="5">
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ListView Grid.Row="0" Name="PasswordsListView" Margin="0,5">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Website" DisplayMemberBinding="{Binding Website}" Width="200"/>
-                        <GridViewColumn Header="Username" DisplayMemberBinding="{Binding Username}" Width="200"/>
-                        <GridViewColumn Header="Password" DisplayMemberBinding="{Binding EncryptedPassword}" Width="300"/>
+                        <GridViewColumn Header="Website" DisplayMemberBinding="{Binding Website}" Width="120"/>
+                        <GridViewColumn Header="Username" DisplayMemberBinding="{Binding Username}" Width="120"/>
+                        <GridViewColumn Header="Actions" Width="100">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="View" Click="ViewPassword_Click" Width="60"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                     </GridView>
                 </ListView.View>
             </ListView>
-        </StackPanel>
+
+            <Button Grid.Row="1" Content="Delete Selected" Name="DeleteButton" HorizontalAlignment="Right" Width="120" Margin="0,5" Click="DeleteButton_Click"/>
+        </Grid>
+    </GroupBox>
     </Grid>
 </Window>
+            

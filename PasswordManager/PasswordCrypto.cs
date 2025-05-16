@@ -14,7 +14,7 @@ namespace PasswordManager.Security
             _key = key;
         }
 
-        public string EncryptString(string plainText)
+        public string EncryptPassword(string plainText)
         {
             // Generate a new random IV for each encryption operation
             byte[] iv;

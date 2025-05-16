@@ -41,6 +41,9 @@ public partial class MainWindow : Window
             "PasswordManager"
         );
 
+        //Create the directory if it doesn't exist
+        Directory.CreateDirectory(appDataPath);
+
         // Ensure dir exists
         _databasePath = Path.Combine(appDataPath, "PasswordManagerDB.db");
 
@@ -104,7 +107,7 @@ public partial class MainWindow : Window
             {
                 Website = website,
                 Username = username,
-                EncryptedPassword = _crypto.EncryptString(password)
+                EncryptedPassword = _crypto.EncryptPassword(password)
             };
 
             _passwordRepository.Add(entry);
@@ -157,9 +160,9 @@ public partial class MainWindow : Window
     }
 
     // Method to view password, decrypts it
-    private void PasswordsListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    private void ViewPassword_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is Button button && button.DataContext is PasswordEntry entry)
+        if (PasswordsListView.SelectedItem is PasswordEntry entry)
         {
             try
             {
@@ -171,9 +174,11 @@ public partial class MainWindow : Window
                 MessageBox.Show($"Error decrypting password: {ex.Message}");
             }
         }
+        else
+        {
+            MessageBox.Show("Please select an entry to view.");
+        }
     }
-
-
 
     // Button to clear input fields
     private void ClearInputs()
