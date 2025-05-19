@@ -14,28 +14,50 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        base.OnStartup(e);
-
-        // Show login window first
-        var loginWindow = new LoginWindow();
-
-        if (loginWindow.ShowDialog() == true)
+        try
         {
-            Console.WriteLine("Login successful.");    
+            base.OnStartup(e);
 
-            // If it's the first run, show the main window after setting the master password
-            MainWindow mainWindow = new MainWindow(loginWindow.DerivedKey);
-            Console.WriteLine("MainWindow created.");
-            mainWindow.Show();
-            Console.WriteLine("MainWindow shown.");
+            // Show login window first
+            var loginWindow = new LoginWindow();
+
+            bool? result = loginWindow.ShowDialog();
+            if (result == true)
+            {
+                if (loginWindow.DerivedKey == null)
+                {
+                    MessageBox.Show("Failed to generate keys. Exiting application.");
+                    Shutdown();
+                    return;
+                }
+
+                try
+                {
+                    MainWindow mainWindow = new MainWindow(loginWindow.DerivedKey);
+                    mainWindow.Show();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred while initializing the main window: {ex.Message}");
+                    Shutdown();
+                    return;
+                }
+                // If it's the first run, show the main window after setting the master password
+                /*MainWindow mainWindow = new MainWindow(loginWindow.DerivedKey, loginWindow.DerivedIv);
+                mainWindow.Show();*/
+            }
+
+            else
+            {
+                Shutdown();
+            }
         }
 
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine("Login failed or cancelled.");
+            MessageBox.Show($"An error occurred during startup: {ex.Message}");
             Shutdown();
         }
     }
-
 }
 

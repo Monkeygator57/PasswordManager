@@ -9,13 +9,13 @@ namespace PasswordManager
     public partial class LoginWindow : Window
     {
         private readonly KeyGenerator _keyGenerator;
-        private byte[] _derivedKey;
-        private byte[] _derivedIv;
+        private byte[]? _derivedKey = null;
+        private byte[]? _derivedIv = null;
 
         public bool IsFirstRun{ get; private set; }
 
-        public byte[] DerivedKey => _derivedKey;
-        public byte[] DerivedIv => _derivedIv;
+        public byte[]? DerivedKey => _derivedKey;
+        public byte[]? DerivedIv => _derivedIv;
 
         public LoginWindow()
         {

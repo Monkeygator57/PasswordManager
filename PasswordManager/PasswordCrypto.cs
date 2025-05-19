@@ -48,6 +48,11 @@ namespace PasswordManager.Security
 
         public string DecryptPassword(string encryptedText)
         {
+            if(string.IsNullOrEmpty(encryptedText))
+            { 
+                throw new ArgumentException("Encrypted text cannot be null or empty.", nameof(encryptedText));
+            }
+
             byte[] fullCipher = Convert.FromBase64String(encryptedText);
 
             // Extract the IV from the beginning of the fullCipher
