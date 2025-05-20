@@ -12,6 +12,8 @@ namespace PasswordManager
         private byte[]? _derivedKey = null;
         private byte[]? _derivedIv = null;
 
+        public event EventHandler<byte[]>? LoginSucceeded;
+
         public bool IsFirstRun{ get; private set; }
 
         public byte[]? DerivedKey => _derivedKey;
@@ -83,7 +85,10 @@ namespace PasswordManager
                     {
                         _derivedKey = result.Key;
                         _derivedIv = result.IV;
-                        DialogResult = true;
+
+                        LoginSucceeded?.Invoke(this, _derivedKey);
+
+                        this.Close();
                     }
 
                     else
@@ -106,7 +111,10 @@ namespace PasswordManager
                 {
                     _derivedKey = result.Key;
                     _derivedIv = result.IV;
-                    DialogResult = true;
+
+                    LoginSucceeded?.Invoke(this, _derivedKey);
+
+                    this.Close();
                 }
                 else
                 {

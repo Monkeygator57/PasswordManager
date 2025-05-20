@@ -59,10 +59,10 @@
                     <GridView>
                         <GridViewColumn Header="Website" DisplayMemberBinding="{Binding Website}" Width="120"/>
                         <GridViewColumn Header="Username" DisplayMemberBinding="{Binding Username}" Width="120"/>
-                        <GridViewColumn Header="Actions" Width="100">
+                        <GridViewColumn Header="Actions" Width="120">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="View" Click="ViewPassword_Click" Width="60"/>
+                                    <Button Content="Copy Password" Click="CopyPassword_Click" Width="100"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

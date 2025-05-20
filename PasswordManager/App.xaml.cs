@@ -1,8 +1,9 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Data;
-using System.Windows;
-using System;
 using System.IO;
+using System.Security.Cryptography;
+using System.Windows;
 
 namespace PasswordManager;
 
@@ -14,6 +15,58 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        try
+        {
+            base.OnStartup(e);
+
+            // Create and show login window
+            var loginWindow = new LoginWindow();
+
+            loginWindow.LoginSucceeded += (sender, key) => {
+                // Only create the main window in this event handler
+                Dispatcher.Invoke(() => {
+                    try
+                    {
+                        var mainWindow = new MainWindow(key);
+                        mainWindow.Show();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error creating main window: {ex.Message}");
+                        Shutdown();
+                    }
+                });
+            };
+
+            // Show login without using ShowDialog()
+            loginWindow.Show();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error: {ex.Message}");
+            Shutdown();
+        }
+
+        /*try
+        {
+            base.OnStartup(e);
+
+            // Generate a temp key just for testing
+            byte[] tempKey = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(tempKey);
+            }
+
+            // Skip login window and go straight to main window
+            MainWindow mainWindow = new MainWindow(tempKey);
+            mainWindow.Show();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred during startup: {ex.Message}");
+            Shutdown();
+        }
         try
         {
             base.OnStartup(e);
@@ -43,8 +96,8 @@ public partial class App : Application
                     return;
                 }
                 // If it's the first run, show the main window after setting the master password
-                /*MainWindow mainWindow = new MainWindow(loginWindow.DerivedKey, loginWindow.DerivedIv);
-                mainWindow.Show();*/
+                //MainWindow mainWindow = new MainWindow(loginWindow.DerivedKey);
+                //mainWindow.Show();
             }
 
             else
@@ -57,7 +110,7 @@ public partial class App : Application
         {
             MessageBox.Show($"An error occurred during startup: {ex.Message}");
             Shutdown();
-        }
+        }*/
     }
 }
 

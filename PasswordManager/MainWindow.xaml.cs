@@ -239,23 +239,31 @@ namespace PasswordManager
         }
 
         // Method to view password, decrypts it
-        private void ViewPassword_Click(object sender, RoutedEventArgs e)
+        private void CopyPassword_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is PasswordEntry entry)
             {
                 try
                 {
                     string decryptedPassword = _crypto.DecryptPassword(entry.EncryptedPassword);
-                    MessageBox.Show($"Password: {decryptedPassword}", $"Password for {entry.Website}");
+                    Clipboard.SetText(decryptedPassword);
+
+                    // Show a brief confirmation without revealing the password
+                    MessageBox.Show(
+                        $"Password for {entry.Website} copied to clipboard!",
+                        "Password Copied",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error decrypting password: {ex.Message}");
+                    MessageBox.Show($"Error copying password: {ex.Message}");
                 }
             }
             else
             {
-                MessageBox.Show("Please select an entry to view.");
+                MessageBox.Show("Unable to identify selected entry.");
             }
         }
 
