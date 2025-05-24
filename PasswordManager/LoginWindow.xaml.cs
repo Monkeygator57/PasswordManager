@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using PasswordManager.Security;
 
 namespace PasswordManager
@@ -48,9 +49,25 @@ namespace PasswordManager
                 ConfirmPasswordRow.Visibility = Visibility.Collapsed;
                 LoginButton.Content = "Login";
             }
+
+            // Set focus to the password box
+            Loaded += (s, e) => PasswordBox.Focus();
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            PerformLogin();
+        }
+
+        private void PasswordBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                PerformLogin();
+            }
+        }
+
+        private void PerformLogin()
         {
             string password = PasswordBox.Password;
            

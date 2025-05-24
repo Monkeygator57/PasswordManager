@@ -8,7 +8,7 @@
         Title="Enter Master Password" Height="300" Width="400"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
-    
+
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -31,8 +31,10 @@
         
         <Label Grid.Row="1" Grid.Column="0" Content="Master Password:"
                VerticalAlignment="Center" Margin="0,0,10,10"/>
-        <PasswordBox Grid.Row="1" Grid.Column="1" x:Name="PasswordBox" 
-                     VerticalAlignment="Center" Height="25" Margin="0,0,0,10"/>
+        <PasswordBox Grid.Row="1" Grid.Column="1" x:Name="PasswordBox"
+                     VerticalAlignment="Center" Height="25" Margin="0,0,0,10"
+                     KeyDown="PasswordBox_KeyDown"/>
+        
 
         <Grid Grid.Row="2" Grid.ColumnSpan="2" x:Name="ConfirmPasswordRow">
             <Grid.ColumnDefinitions>
@@ -42,7 +44,8 @@
             <Label Grid.Column="0" Content="Confirm Password:" 
            VerticalAlignment="Center" Margin="0,0,10,10"/>
             <PasswordBox Grid.Column="1" x:Name="ConfirmPasswordBox" 
-                 VerticalAlignment="Center" Height="25" Margin="0,0,0,10"/>
+                 VerticalAlignment="Center" Height="25" Margin="0,0,0,10"
+                 KeyDown="PasswordBox_KeyDown"/>
         </Grid>
 
         <TextBlock Grid.Row="3" Grid.ColumnSpan="2" 
@@ -57,7 +60,8 @@
                     Click="CancelButton_Click"/>
             <Button x:Name="LoginButton" Content="Login" 
                     Width="80" Height="30"
-                    Click="LoginButton_Click"/>
+                    Click="LoginButton_Click"
+                    IsDefault="True"/>
         </StackPanel>
     </Grid>
 </Window>
