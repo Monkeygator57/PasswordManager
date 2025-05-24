@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="Enter Master Password" Height="300" Width="400"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        Icon="icon.ico">
 
     <Grid Margin="20">
         <Grid.RowDefinitions>

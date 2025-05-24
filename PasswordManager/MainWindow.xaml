@@ -5,14 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PasswordManager"
         mc:Ignorable="d"
-        Title="PasswordManager" Height="500" Width="800">
-    <Grid Margin="10">
+        Title="PasswordManager" Height="600" Width="900"
+        Icon="icon.ico"
+        MinHeight="500" MinWidth="700">
+
+    <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="400"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -44,35 +47,34 @@
                     <Button Content="Add" Name="AddButton" Width="80" Margin="5, 0" Click="AddButton_Click"/>
                 </StackPanel>
             </Grid>
-    </GroupBox>
+        </GroupBox>
 
 
-    <GroupBox Header="Saved Passwords" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="5">
-        <Grid Margin="5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <GroupBox Header="Saved Passwords" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="5">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <ListView Grid.Row="0" Name="PasswordsListView" Margin="0,5">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Website" DisplayMemberBinding="{Binding Website}" Width="120"/>
-                        <GridViewColumn Header="Username" DisplayMemberBinding="{Binding Username}" Width="120"/>
-                        <GridViewColumn Header="Actions" Width="120">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Content="Copy Password" Click="CopyPassword_Click" Width="100"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+                <ListView Grid.Row="0" Name="PasswordsListView" Margin="0,5">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Website" DisplayMemberBinding="{Binding Website}" Width="120"/>
+                            <GridViewColumn Header="Username" DisplayMemberBinding="{Binding Username}" Width="120"/>
+                            <GridViewColumn Header="Actions" Width="120">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Copy Password" Click="CopyPassword_Click" Width="100"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
 
-            <Button Grid.Row="1" Content="Delete Selected" Name="DeleteButton" HorizontalAlignment="Right" Width="120" Margin="0,5" Click="DeleteButton_Click"/>
-        </Grid>
-    </GroupBox>
+                <Button Grid.Row="1" Content="Delete Selected" Name="DeleteButton" HorizontalAlignment="Right" Width="120" Margin="0,5" Click="DeleteButton_Click"/>
+            </Grid>
+        </GroupBox>
     </Grid>
 </Window>
-            
