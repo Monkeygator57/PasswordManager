@@ -138,7 +138,7 @@
                                                     </Style>
                                                 </Button.Style>
                                             </Button>
-                                            <Button Content="Copy Password" Click="CopyPassword_Click" 
+                                            <Button Content="📋" ToolTip="Copy Password to Clipboard" Click="CopyPassword_Click" 
                                                Width="30" Height="28" Background="#17A2B8" 
                                                Foreground="White" BorderThickness="0" 
                                                FontSize="12"/>
