@@ -226,15 +226,27 @@ namespace PasswordManager
                 return;
             }
 
-            try
-            {
-                _passwordRepository.Delete(selectedEntry.ID);
-                LoadPasswords();
-            }
+            var result = MessageBox.Show(
+                $"Are you sure you want to delete the password for {selectedEntry.Website}?",
+                "Confirm Delete",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning,
+                MessageBoxResult.No
+            );
 
-            catch (Exception ex)
+            if (result == MessageBoxResult.Yes)
             {
-                MessageBox.Show($"Error deleting password: {ex.Message}");
+                try
+                {
+                    _passwordRepository.Delete(selectedEntry.ID);
+                    LoadPasswords();
+                }
+
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error deleting password: {ex.Message}");
+                }
+
             }
         }
 
