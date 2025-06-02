@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PasswordManager"
         mc:Ignorable="d"
-        Title="PasswordManager" Height="600" Width="900"
+        Title="PasswordManager" Height="600" Width="950"
         Icon="icon.ico"
         MinHeight="500" MinWidth="700">
 
@@ -75,7 +75,7 @@
                          BorderThickness="0" Background="Transparent">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Website" DisplayMemberBinding="{Binding Website}" Width="140">
+                            <GridViewColumn Header="Website" DisplayMemberBinding="{Binding Website}" Width="130">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader">
                                         <Setter Property="Background" Value="#F8F9FA"/>
@@ -86,7 +86,7 @@
                                     </Style>
                                 </GridViewColumn.HeaderContainerStyle>
                             </GridViewColumn>
-                            <GridViewColumn Header="Username" DisplayMemberBinding="{Binding Username}" Width="140">
+                            <GridViewColumn Header="Username" DisplayMemberBinding="{Binding Username}" Width="130">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader">
                                         <Setter Property="Background" Value="#F8F9FA"/>
@@ -97,7 +97,7 @@
                                     </Style>
                                 </GridViewColumn.HeaderContainerStyle>
                             </GridViewColumn>
-                            <GridViewColumn Header="Actions" Width="120">
+                            <GridViewColumn Header="Actions" Width="200">
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style TargetType="GridViewColumnHeader">
                                         <Setter Property="Background" Value="#F8F9FA"/>
@@ -107,12 +107,42 @@
                                         <Setter Property="FontWeight" Value="Medium"/>
                                     </Style>
                                 </GridViewColumn.HeaderContainerStyle>
+                                
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Content="Copy Password" Click="CopyPassword_Click" 
-                                               Width="100" Height="28" Background="#17A2B8" 
+                                        <StackPanel Orientation="Horizontal" Margin="2">
+                                            <Button Content="View" ToolTip="View Password" Click="ViewPassword_Click"
+                                                    Width="100" Height="25" Background="#6C757D"
+                                                    Foreground="White" BorderThickness="0"
+                                                    FontSize="12" Margin="0,0,5,0">
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border Background="{TemplateBinding Background}"
+                                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                                                            CornerRadius="4">
+                                                                        <ContentPresenter HorizontalAlignment="Center"
+                                                                                          VerticalAlignment="Center"/>
+                                                                    </Border>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter Property="Background" Value="#5A6268"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Button Content="Copy Password" Click="CopyPassword_Click" 
+                                               Width="30" Height="28" Background="#17A2B8" 
                                                Foreground="White" BorderThickness="0" 
                                                FontSize="12"/>
+                                        </StackPanel>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

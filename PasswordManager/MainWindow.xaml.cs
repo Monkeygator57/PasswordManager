@@ -238,7 +238,6 @@ namespace PasswordManager
             }
         }
 
-        // Method to view password, decrypts it
         private void CopyPassword_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is PasswordEntry entry)
@@ -264,6 +263,35 @@ namespace PasswordManager
             else
             {
                 MessageBox.Show("Unable to identify selected entry.");
+            }
+        }
+
+        private void ViewPassword_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is PasswordEntry entry)
+            {
+                try
+                {
+                    if (button.Content.ToString() == "View")
+                    {
+                        // Show the password
+                        string decryptedPassword = _crypto.DecryptPassword(entry.EncryptedPassword);
+                        button.Content = decryptedPassword;
+                        button.ToolTip = "Click to hide password";
+                        button.FontSize = 12;
+                    }
+                    else
+                    {
+                        // Hide the password
+                        button.Content = "View";
+                        button.Background = new SolidColorBrush(Color.FromRgb(108, 117, 125));
+                        button.ToolTip = "View Password";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error viewing password: {ex.Message}");
+                }
             }
         }
 
