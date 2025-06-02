@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PasswordManager"
         mc:Ignorable="d"
-        Title="Enter Master Password" Height="600" Width="450"
+        Title="Enter Master Password" Height="700" Width="450"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Icon="icon.ico"
@@ -20,6 +20,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -29,8 +30,8 @@
                 <TextBlock Text="🔐" FontSize="32" HorizontalAlignment="Center" Margin="0,0,0,10"/>
                 <TextBlock Text="Password Manager" FontSize="24" FontWeight="SemiBold" 
                           Foreground="#495057" HorizontalAlignment="Center"/>
-                <TextBlock Text="Secure Access Required" FontSize="14" 
-                          Foreground="#6C757D" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                <TextBlock x:Name="SubtitleText" Text="Login with master password" FontSize="20" 
+                          Foreground="#FE2D00" HorizontalAlignment="Center" Margin="0,5,0,0"/>
             </StackPanel>
 
             <!-- Master Password -->

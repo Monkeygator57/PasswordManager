@@ -40,12 +40,15 @@ namespace PasswordManager
             if (IsFirstRun)
             {
                 Title = "Set Master Password";
+                SubtitleText.Text = "Create a master password to store your info.";
+                SubtitleText.FontSize = 14;
                 ConfirmPasswordRow.Visibility = Visibility.Visible;
                 LoginButton.Content = "Create";
             }
             else
             {
                 Title = "Enter Master Password";
+                SubtitleText.Text = "Login with master password.";
                 ConfirmPasswordRow.Visibility = Visibility.Collapsed;
                 LoginButton.Content = "Login";
             }
